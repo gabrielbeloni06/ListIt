@@ -5,3 +5,4 @@ class FilmeSerializer(serializers.ModelSerializer):
     class Meta:
         model = Filme
         fields = '__all__'
+        read_only_fields = ['dono']

@@ -1,10 +1,10 @@
 import { useState, useEffect } from 'react'
-import { Routes, Route, Link, useNavigate, Navigate } from 'react-router-dom' 
+import { Routes, Route, Link, useNavigate, Navigate } from 'react-router-dom'
 import { motion, AnimatePresence } from 'framer-motion' 
-import axios from 'axios' 
-import api from './api'  
+import axios from 'axios'
+import api from './api'
 import Tilt from 'react-parallax-tilt'
-import LoginPage from './LoginPage'
+import LoginPage from './LoginPage' 
 import RegisterPage from './RegisterPage'
 import './App.css' 
 import cloudsBg from './assets/anime-clouds.jpg'      
@@ -19,19 +19,7 @@ const PrivateRoute = ({ children }) => {
 }
 
 const HeartIcon = ({ filled, onClick }) => (
-  <svg 
-    onClick={onClick}
-    xmlns="http://www.w3.org/2000/svg" 
-    viewBox="0 0 24 24" 
-    fill={filled ? "#e74c3c" : "none"} 
-    stroke={filled ? "#e74c3c" : "currentColor"} 
-    strokeWidth="2" 
-    strokeLinecap="round" 
-    strokeLinejoin="round"
-    style={{ width: '24px', height: '24px', cursor: 'pointer', transition: '0.2s transform' }}
-    onMouseOver={(e) => e.target.style.transform = 'scale(1.2)'}
-    onMouseOut={(e) => e.target.style.transform = 'scale(1)'}
-  >
+  <svg onClick={onClick} xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill={filled ? "#e74c3c" : "none"} stroke={filled ? "#e74c3c" : "currentColor"} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ width: '24px', height: '24px', cursor: 'pointer', transition: '0.2s transform' }} onMouseOver={(e) => e.target.style.transform = 'scale(1.2)'} onMouseOut={(e) => e.target.style.transform = 'scale(1)'}>
     <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
   </svg>
 )
@@ -43,7 +31,7 @@ function LandingPage() {
   const handleLogout = () => {
     localStorage.removeItem('access_token')
     localStorage.removeItem('refresh_token')
-    navigate('/login') 
+    navigate('/login')
   }
 
   return (
@@ -57,10 +45,7 @@ function LandingPage() {
       </div>
 
       <section className="snap-section">
-        <motion.div 
-          initial={{ scale: 1 }} animate={{ scale: 1.1 }} transition={{ duration: 20, repeat: Infinity, repeatType: "reverse", ease: "linear" }}
-          style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', backgroundImage: `url(${cloudsBg})`, backgroundSize: 'cover', backgroundPosition: 'center', zIndex: 0 }}
-        />
+        <motion.div initial={{ scale: 1 }} animate={{ scale: 1.1 }} transition={{ duration: 20, repeat: Infinity, repeatType: "reverse", ease: "linear" }} style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', backgroundImage: `url(${cloudsBg})`, backgroundSize: 'cover', backgroundPosition: 'center', zIndex: 0 }} />
         <div style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', background: 'rgba(0,0,0,0.2)', zIndex: 1 }}></div>
         <motion.div initial={{ opacity: 0, y: 50 }} whileInView={{ opacity: 1, y: 0 }} transition={{ duration: 1.5 }} style={{ zIndex: 2, textAlign: 'center' }}>
           <motion.p initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 1, duration: 2 }} style={{ fontFamily: "'Great Vibes', cursive", fontSize: '3.5rem', color: '#fff', margin: 0, textShadow: '0 0 10px rgba(255,255,255,0.5)' }}></motion.p>
@@ -112,18 +97,18 @@ function AnimePage() {
   const [resultados, setResultados] = useState([])
   const navigate = useNavigate()
 
-  useEffect(() => { fetchMinhaLista() }, [])
-  const handleLogout = () => {
+  const logout = () => {
     localStorage.removeItem('access_token')
-    localStorage.removeItem('refresh_token')
-    navigate('/login')
+    navigate('/')
   }
+
+  useEffect(() => { fetchMinhaLista() }, [])
 
   const fetchMinhaLista = async () => {
     try {
-      const response = await api.get('animes/') 
+      const response = await api.get('animes/')
       setAnimes(response.data)
-    } catch (error) { console.error(error) }
+    } catch (error) { console.error("Erro ao buscar lista", error) }
   }
 
   const pesquisarAnime = async () => {
@@ -133,13 +118,18 @@ function AnimePage() {
   }
 
   const salvarAnime = async (item) => {
-    await api.post('animes/', {
-      titulo: item.title, api_id: item.mal_id, capa_url: item.images.jpg.image_url, nota_pessoal: 10, comentario: "Via App"
-    })
-    alert("Anime adicionado!")
-    fetchMinhaLista()
-    setResultados([]) 
-    setBusca('') 
+    try {
+      await api.post('animes/', {
+        titulo: item.title, api_id: item.mal_id, capa_url: item.images.jpg.image_url, nota_pessoal: 10, comentario: "Via App"
+      })
+      alert("Anime adicionado!")
+      fetchMinhaLista()
+      setResultados([]) 
+      setBusca('')
+    } catch (error) {
+      console.error("Erro ao salvar", error)
+      alert("Erro ao salvar. Você está logado?")
+    }
   }
 
   const deletarAnime = async (id) => {
@@ -158,37 +148,23 @@ function AnimePage() {
     <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} style={{ background: '#120a21', minHeight: '100vh', fontFamily: 'Montserrat', color: 'white' }}>
       <div style={{ height: '40vh', position: 'relative', overflow: 'hidden', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
         <div style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', backgroundImage: `url(${animeHeaderBg})`, backgroundSize: 'cover', backgroundPosition: 'center', filter: 'brightness(0.6)', backgroundAttachment: 'fixed' }}></div>
-        <div style={{ zIndex: 2, textAlign: 'center' }}>
-          <h1 style={{ fontFamily: 'Oswald', fontSize: '5rem', letterSpacing: '10px', textShadow: '0 0 20px #a29bfe' }}>ANIME LIST</h1>
-        </div>
+        <div style={{ zIndex: 2, textAlign: 'center' }}><h1 style={{ fontFamily: 'Oswald', fontSize: '5rem', letterSpacing: '10px', textShadow: '0 0 20px #a29bfe' }}>ANIME LIST</h1></div>
         <div style={{ position: 'absolute', top: '30px', right: '30px', zIndex: 10, display: 'flex', gap: '15px' }}>
-          <Link to="/" style={{ textDecoration: 'none', color: 'white', border: '1px solid rgba(255,255,255,0.3)', padding: '10px 20px', borderRadius: '30px', backdropFilter: 'blur(5px)', fontWeight: 'bold' }}>
-            HOME
-          </Link>
-          <button onClick={handleLogout} style={{ textDecoration: 'none', color: 'white', background: 'rgba(231, 76, 60, 0.7)', border: 'none', padding: '10px 20px', borderRadius: '30px', backdropFilter: 'blur(5px)', fontWeight: 'bold', cursor: 'pointer' }}>
-            LOGOUT
-          </button>
+          <Link to="/" style={{ textDecoration: 'none', color: 'white', border: '1px solid rgba(255,255,255,0.3)', padding: '10px 20px', borderRadius: '30px', backdropFilter: 'blur(5px)', fontWeight: 'bold' }}>HOME</Link>
+          <button onClick={logout} style={{ textDecoration: 'none', color: 'white', background: 'rgba(231, 76, 60, 0.7)', border: 'none', padding: '10px 20px', borderRadius: '30px', backdropFilter: 'blur(5px)', fontWeight: 'bold', cursor: 'pointer' }}>LOGOUT</button>
         </div>
       </div>
-
       <div style={{ maxWidth: '1200px', margin: '-50px auto 0', position: 'relative', zIndex: 3, padding: '0 20px' }}>
-        
         <div style={{ background: 'rgba(20, 10, 30, 0.8)', padding: '30px', borderRadius: '20px', backdropFilter: 'blur(20px)', border: '1px solid rgba(162, 155, 254, 0.2)', boxShadow: '0 20px 50px rgba(0,0,0,0.5)' }}>
           <div style={{ display: 'flex', gap: '15px' }}>
-            <input 
-              placeholder="Busque seu próximo anime..." 
-              value={busca} onChange={e => setBusca(e.target.value)}
-              style={{ flex: 1, background: 'rgba(255,255,255,0.05)', border: '1px solid #a29bfe', color: 'white', fontSize: '1.2rem', padding: '15px', borderRadius: '10px', outline: 'none' }}
-            />
+            <input placeholder="Busque seu próximo anime..." value={busca} onChange={e => setBusca(e.target.value)} style={{ flex: 1, background: 'rgba(255,255,255,0.05)', border: '1px solid #a29bfe', color: 'white', fontSize: '1.2rem', padding: '15px', borderRadius: '10px', outline: 'none' }} />
             <button onClick={pesquisarAnime} style={{ padding: '0 40px', background: '#6c5ce7', color: 'white', border: 'none', borderRadius: '10px', fontSize: '1rem', fontWeight: 'bold', cursor: 'pointer', textTransform: 'uppercase' }}>Buscar</button>
           </div>
           {resultados.length > 0 && (
             <motion.div initial={{ height: 0, opacity: 0 }} animate={{ height: 'auto', opacity: 1 }} style={{ display: 'flex', gap: '20px', overflowX: 'auto', marginTop: '30px', paddingBottom: '20px' }}>
               {resultados.map(item => (
                 <div key={item.mal_id} style={{ minWidth: '140px', cursor: 'pointer', position: 'relative' }} onClick={() => salvarAnime(item)}>
-                  <div style={{position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', background: 'rgba(0,0,0,0.6)', display: 'flex', alignItems: 'center', justifyContent: 'center', opacity: 0, transition: '0.2s', borderRadius: '10px'}} className="hover-overlay">
-                    <span style={{fontSize: '2rem'}}>+</span>
-                  </div>
+                  <div style={{position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', background: 'rgba(0,0,0,0.6)', display: 'flex', alignItems: 'center', justifyContent: 'center', opacity: 0, transition: '0.2s', borderRadius: '10px'}} className="hover-overlay"><span style={{fontSize: '2rem'}}>+</span></div>
                   <img src={item.images.jpg.image_url} style={{ width: '140px', height: '200px', objectFit: 'cover', borderRadius: '10px' }} />
                   <p style={{ fontSize: '0.8rem', marginTop: '5px', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{item.title}</p>
                 </div>
@@ -198,31 +174,19 @@ function AnimePage() {
         </div>
         <div style={{ marginTop: '50px', marginBottom: '50px' }}>
           <h2 style={{ fontFamily: 'Oswald', fontSize: '2rem', marginBottom: '30px', borderLeft: '5px solid #a29bfe', paddingLeft: '15px' }}>MINHA COLEÇÃO <span style={{opacity: 0.5}}>({animes.length})</span></h2>
-          
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(200px, 1fr))', gap: '30px' }}>
             {animes.map(anime => (
               <Tilt key={anime.id} scale={1.02} transitionSpeed={2500}>
                 <div style={{ background: '#1e162e', borderRadius: '15px', overflow: 'hidden', position: 'relative', boxShadow: '0 10px 20px rgba(0,0,0,0.3)', border: '1px solid rgba(255,255,255,0.05)' }}>
-                  
                   <div style={{ position: 'relative' }}>
                     {anime.capa_url && <img src={anime.capa_url} style={{ width: '100%', height: '280px', objectFit: 'cover' }} />}
-                    <div style={{ position: 'absolute', top: '10px', right: '10px', background: 'rgba(0,0,0,0.6)', borderRadius: '50%', padding: '8px', backdropFilter: 'blur(5px)' }}>
-                      <HeartIcon filled={true} onClick={() => deletarAnime(anime.id)} />
-                    </div>
+                    <div style={{ position: 'absolute', top: '10px', right: '10px', background: 'rgba(0,0,0,0.6)', borderRadius: '50%', padding: '8px', backdropFilter: 'blur(5px)' }}><HeartIcon filled={true} onClick={() => deletarAnime(anime.id)} /></div>
                   </div>
-
                   <div style={{ padding: '15px' }}>
                     <h3 style={{ margin: '0 0 10px 0', fontSize: '1rem', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', color: '#fff' }}>{anime.titulo}</h3>
-                    
                     <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', background: '#2d243e', borderRadius: '8px', padding: '5px 10px' }}>
                       <span style={{ fontSize: '0.8rem', color: '#aaa' }}>Nota:</span>
-                      <select 
-                        value={anime.nota_pessoal} 
-                        onChange={e => atualizarNota(anime, e.target.value)} 
-                        style={{ background: 'transparent', color: '#a29bfe', border: 'none', fontWeight: 'bold', cursor: 'pointer', outline: 'none' }}
-                      >
-                        {[10,9,8,7,6,5,4,3,2,1].map(n => <option key={n} value={n}>{n}</option>)}
-                      </select>
+                      <select value={anime.nota_pessoal} onChange={e => atualizarNota(anime, e.target.value)} style={{ background: 'transparent', color: '#a29bfe', border: 'none', fontWeight: 'bold', cursor: 'pointer', outline: 'none' }}>{[10,9,8,7,6,5,4,3,2,1].map(n => <option key={n} value={n}>{n}</option>)}</select>
                       <span style={{color:'#f1c40f'}}>★</span>
                     </div>
                   </div>
@@ -231,7 +195,6 @@ function AnimePage() {
             ))}
           </div>
         </div>
-
       </div>
     </motion.div>
   )
@@ -244,16 +207,18 @@ function MoviePage() {
   const navigate = useNavigate()
   const TMDB_API_KEY = "87897d6f6b9574dec01a9e050477f47d"
 
-  useEffect(() => { fetchMinhaLista() }, [])
-  const handleLogout = () => {
+  const logout = () => {
     localStorage.removeItem('access_token')
-    localStorage.removeItem('refresh_token')
-    navigate('/login')
+    navigate('/')
   }
 
+  useEffect(() => { fetchMinhaLista() }, [])
+
   const fetchMinhaLista = async () => {
-    const response = await api.get('filmes/')
-    setFilmes(response.data)
+    try {
+      const response = await api.get('filmes/')
+      setFilmes(response.data)
+    } catch (error) { console.error("Erro ao buscar filmes", error) }
   }
 
   const pesquisarFilme = async () => {
@@ -263,14 +228,19 @@ function MoviePage() {
   }
 
   const salvarFilme = async (item) => {
-    const capa = item.poster_path ? `https://image.tmdb.org/t/p/w500${item.poster_path}` : null
-    await api.post('filmes/', {
-      titulo: item.title, api_id: item.id, capa_url: capa, nota_pessoal: 10, comentario: item.overview
-    })
-    alert("Filme adicionado!")
-    fetchMinhaLista()
-    setResultados([])
-    setBusca('')
+    try {
+      const capa = item.poster_path ? `https://image.tmdb.org/t/p/w500${item.poster_path}` : null
+      await api.post('filmes/', {
+        titulo: item.title, api_id: item.id, capa_url: capa, nota_pessoal: 10, comentario: item.overview
+      })
+      alert("Filme adicionado!")
+      fetchMinhaLista()
+      setResultados([])
+      setBusca('')
+    } catch (error) {
+      console.error("Erro ao salvar filme", error)
+      alert("Erro ao salvar. Verifique se está logado.")
+    }
   }
 
   const deletarFilme = async (id) => {
@@ -287,30 +257,18 @@ function MoviePage() {
 
   return (
     <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} style={{ background: '#0f0f0f', minHeight: '100vh', fontFamily: 'Montserrat', color: 'white' }}>
-      
       <div style={{ height: '40vh', position: 'relative', overflow: 'hidden', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
         <div style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', backgroundImage: `url(${movieHeaderBg})`, backgroundSize: 'cover', backgroundPosition: 'center', filter: 'brightness(0.6)', backgroundAttachment: 'fixed' }}></div>
-        <div style={{ zIndex: 2, textAlign: 'center' }}>
-          <h1 style={{ fontFamily: 'Oswald', fontSize: '5rem', letterSpacing: '10px', textShadow: '0 0 20px #d35400' }}>CINEMA LIST</h1>
-        </div>
+        <div style={{ zIndex: 2, textAlign: 'center' }}><h1 style={{ fontFamily: 'Oswald', fontSize: '5rem', letterSpacing: '10px', textShadow: '0 0 20px #d35400' }}>CINEMA LIST</h1></div>
         <div style={{ position: 'absolute', top: '30px', right: '30px', zIndex: 10, display: 'flex', gap: '15px' }}>
-          <Link to="/" style={{ textDecoration: 'none', color: 'white', border: '1px solid rgba(255,255,255,0.3)', padding: '10px 20px', borderRadius: '30px', backdropFilter: 'blur(5px)', fontWeight: 'bold' }}>
-            HOME
-          </Link>
-          <button onClick={handleLogout} style={{ textDecoration: 'none', color: 'white', background: 'rgba(231, 76, 60, 0.7)', border: 'none', padding: '10px 20px', borderRadius: '30px', backdropFilter: 'blur(5px)', fontWeight: 'bold', cursor: 'pointer' }}>
-            LOGOUT
-          </button>
+          <Link to="/" style={{ textDecoration: 'none', color: 'white', border: '1px solid rgba(255,255,255,0.3)', padding: '10px 20px', borderRadius: '30px', backdropFilter: 'blur(5px)', fontWeight: 'bold' }}>HOME</Link>
+          <button onClick={logout} style={{ textDecoration: 'none', color: 'white', background: 'rgba(231, 76, 60, 0.7)', border: 'none', padding: '10px 20px', borderRadius: '30px', backdropFilter: 'blur(5px)', fontWeight: 'bold', cursor: 'pointer' }}>LOGOUT</button>
         </div>
       </div>
       <div style={{ maxWidth: '1200px', margin: '-50px auto 0', position: 'relative', zIndex: 3, padding: '0 20px' }}>
-        
         <div style={{ background: 'rgba(20, 10, 0, 0.8)', padding: '30px', borderRadius: '20px', backdropFilter: 'blur(20px)', border: '1px solid rgba(211, 84, 0, 0.2)', boxShadow: '0 20px 50px rgba(0,0,0,0.5)' }}>
           <div style={{ display: 'flex', gap: '15px' }}>
-            <input 
-              placeholder="Qual filme vamos assistir hoje?" 
-              value={busca} onChange={e => setBusca(e.target.value)}
-              style={{ flex: 1, background: 'rgba(255,255,255,0.05)', border: '1px solid #d35400', color: 'white', fontSize: '1.2rem', padding: '15px', borderRadius: '10px', outline: 'none' }}
-            />
+            <input placeholder="Qual filme vamos assistir hoje?" value={busca} onChange={e => setBusca(e.target.value)} style={{ flex: 1, background: 'rgba(255,255,255,0.05)', border: '1px solid #d35400', color: 'white', fontSize: '1.2rem', padding: '15px', borderRadius: '10px', outline: 'none' }} />
             <button onClick={pesquisarFilme} style={{ padding: '0 40px', background: '#d35400', color: 'white', border: 'none', borderRadius: '10px', fontSize: '1rem', fontWeight: 'bold', cursor: 'pointer', textTransform: 'uppercase' }}>Buscar</button>
           </div>
           {resultados.length > 0 && (
@@ -326,31 +284,19 @@ function MoviePage() {
         </div>
         <div style={{ marginTop: '50px', marginBottom: '50px' }}>
           <h2 style={{ fontFamily: 'Oswald', fontSize: '2rem', marginBottom: '30px', borderLeft: '5px solid #d35400', paddingLeft: '15px' }}>MINHA COLEÇÃO <span style={{opacity: 0.5}}>({filmes.length})</span></h2>
-          
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(200px, 1fr))', gap: '30px' }}>
             {filmes.map(filme => (
               <Tilt key={filme.id} scale={1.02} transitionSpeed={2500}>
                 <div style={{ background: '#1a1a1a', borderRadius: '15px', overflow: 'hidden', position: 'relative', boxShadow: '0 10px 20px rgba(0,0,0,0.3)', border: '1px solid rgba(255,255,255,0.05)' }}>
-                  
                   <div style={{ position: 'relative' }}>
                     {filme.capa_url && <img src={filme.capa_url} style={{ width: '100%', height: '280px', objectFit: 'cover' }} />}
-                    <div style={{ position: 'absolute', top: '10px', right: '10px', background: 'rgba(0,0,0,0.6)', borderRadius: '50%', padding: '8px', backdropFilter: 'blur(5px)' }}>
-                      <HeartIcon filled={true} onClick={() => deletarFilme(filme.id)} />
-                    </div>
+                    <div style={{ position: 'absolute', top: '10px', right: '10px', background: 'rgba(0,0,0,0.6)', borderRadius: '50%', padding: '8px', backdropFilter: 'blur(5px)' }}><HeartIcon filled={true} onClick={() => deletarFilme(filme.id)} /></div>
                   </div>
-
                   <div style={{ padding: '15px' }}>
                     <h3 style={{ margin: '0 0 10px 0', fontSize: '1rem', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', color: '#f1c40f' }}>{filme.titulo}</h3>
-                    
                     <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', background: '#333', borderRadius: '8px', padding: '5px 10px' }}>
                       <span style={{ fontSize: '0.8rem', color: '#aaa' }}>Nota:</span>
-                      <select 
-                        value={filme.nota_pessoal} 
-                        onChange={e => atualizarNota(filme, e.target.value)} 
-                        style={{ background: 'transparent', color: '#f1c40f', border: 'none', fontWeight: 'bold', cursor: 'pointer', outline: 'none' }}
-                      >
-                        {[10,9,8,7,6,5,4,3,2,1].map(n => <option key={n} value={n}>{n}</option>)}
-                      </select>
+                      <select value={filme.nota_pessoal} onChange={e => atualizarNota(filme, e.target.value)} style={{ background: 'transparent', color: '#f1c40f', border: 'none', fontWeight: 'bold', cursor: 'pointer', outline: 'none' }}>{[10,9,8,7,6,5,4,3,2,1].map(n => <option key={n} value={n}>{n}</option>)}</select>
                       <span style={{color:'#f1c40f'}}>★</span>
                     </div>
                   </div>
@@ -359,7 +305,6 @@ function MoviePage() {
             ))}
           </div>
         </div>
-
       </div>
     </motion.div>
   )
@@ -371,17 +316,8 @@ function App() {
       <Route path="/" element={<LandingPage />} />
       <Route path="/login" element={<LoginPage />} />
       <Route path="/register" element={<RegisterPage />} />
-      <Route path="/animes" element={
-        <PrivateRoute>
-          <AnimePage />
-        </PrivateRoute>
-      } />
-      
-      <Route path="/filmes" element={
-        <PrivateRoute>
-          <MoviePage />
-        </PrivateRoute>
-      } />
+      <Route path="/animes" element={<PrivateRoute><AnimePage /></PrivateRoute>} />
+      <Route path="/filmes" element={<PrivateRoute><MoviePage /></PrivateRoute>} />
     </Routes>
   )
 }
