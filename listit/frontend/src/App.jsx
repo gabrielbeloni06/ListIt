@@ -26,9 +26,23 @@ function App() {
       console.error("Erro ao buscar no Jikan:", error)
     }
   }
-  const salvarAnime = (animeExterno) => {
-    alert(`Calma! No próximo passo vamos salvar: ${animeExterno.title}`)
-    console.log(animeExterno)
+  const salvarAnime = async (animeExterno) => {
+    try {
+      const pacoteParaDjango = {
+        titulo: animeExterno.title,
+        api_id: animeExterno.mal_id,
+        capa_url: animeExterno.images.jpg.image_url,
+        nota_pessoal: 10,
+        comentario: "Adicionado via busca"
+      }
+      await axios.post('http://127.0.0.1:8000/api/animes/', pacoteParaDjango)
+      alert(`Sucesso! ${animeExterno.title} foi salvo.`)
+      fetchMinhaLista()
+      
+    } catch (error) {
+      console.error("Erro ao salvar:", error)
+      alert("Erro! Provavelmente você já adicionou esse anime.")
+    }
   }
   return (
     <div style={{ padding: '40px', fontFamily: 'Arial', maxWidth: '1000px', margin: '0 auto' }}>
