@@ -4,7 +4,8 @@ import { motion, AnimatePresence } from 'framer-motion'
 import axios from 'axios' 
 import api from './api'  
 import Tilt from 'react-parallax-tilt'
-import LoginPage from './LoginPage' 
+import LoginPage from './LoginPage'
+import RegisterPage from './RegisterPage'
 import './App.css' 
 import cloudsBg from './assets/anime-clouds.jpg'      
 import cityBg from './assets/cyberpunk-city.jpg'      
@@ -369,6 +370,7 @@ function App() {
     <Routes>
       <Route path="/" element={<LandingPage />} />
       <Route path="/login" element={<LoginPage />} />
+      <Route path="/register" element={<RegisterPage />} />
       <Route path="/animes" element={
         <PrivateRoute>
           <AnimePage />
