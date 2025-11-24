@@ -32,13 +32,13 @@ function LandingPage() {
             initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 1, duration: 2 }}
             style={{ fontFamily: "'Great Vibes', cursive", fontSize: '3.5rem', color: '#fff', margin: 0, textShadow: '0 0 10px rgba(255,255,255,0.5)' }}
           >
-            Gabriel Beloni
+            
           </motion.p>
-          <h1 style={{ fontFamily: "'Oswald', sans-serif", fontSize: 'clamp(4rem, 10vw, 8rem)', letterSpacing: '10px', margin: '-10px 0 0 0', textShadow: '0 10px 30px rgba(0,0,0,0.5)', lineHeight: 1 }}>
-            FILM REVIEW
+          <h1 style={{ fontFamily: "'Great Vibes', cursive", fontSize: 'clamp(4rem, 10vw, 8rem)', letterSpacing: '10px', margin: '-10px 0 0 0', textShadow: '0 10px 30px rgba(0,0,0,0.5)', lineHeight: 1 }}>
+            ListIt
           </h1>
           <p style={{ fontSize: '1.2rem', letterSpacing: '5px', marginTop: '10px', opacity: 0.9, fontFamily: 'Montserrat', textTransform: 'uppercase' }}>
-            Your Personal Collection
+            Gerencie os seus filmes e animes favoritos.
           </p>
         </motion.div>
       </section>
@@ -59,12 +59,12 @@ function LandingPage() {
           
           <motion.div initial={{ opacity: 0, x: -50 }} whileInView={{ opacity: 1, x: 0 }} transition={{ duration: 0.8 }} style={{ flex: 1, minWidth: '300px' }}>
             <h2 style={{ fontFamily: "'Oswald', sans-serif", fontSize: '4rem', margin: 0, lineHeight: 1, color: 'white', textShadow: '0 0 20px rgba(255, 0, 128, 0.8)' }}>
-              MY TRACKER<br/><span style={{ color: '#00f2ff' }}>(2025)</span>
+              Minha Lista<br/><span style={{ color: '#00f2ff' }}>(2025)</span>
             </h2>
             <p style={{ marginTop: '30px', fontFamily: 'Montserrat', fontSize: '1.1rem', lineHeight: '1.8', color: '#e0e0e0', borderLeft: '4px solid #00f2ff', paddingLeft: '20px' }}>
-              A full-stack immersive dashboard connecting React, Django and external APIs.
+              Um mundo todo de animes e filmes dentro de um site.
               <br/><br/>
-              Track your favorite anime series and movies in a single, futuristic interface designed for collectors.
+              Favorite, avalie e compartilhe seus filmes e animes preferidos. 
             </p>
           </motion.div>
 
@@ -82,7 +82,7 @@ function LandingPage() {
       <section className="snap-section" style={{ background: '#0a0a0a' }}>
         <div style={{ textAlign: 'center' }}>
           <motion.h2 initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} style={{ fontSize: '2rem', marginBottom: '50px', letterSpacing: '3px', color: 'white' }}>
-            CHOOSE YOUR WORLD
+            ESCOLHA O SEU MUNDO
           </motion.h2>
           <div style={{ display: 'flex', gap: '40px', flexWrap: 'wrap', justifyContent: 'center' }}>
             
@@ -102,7 +102,7 @@ function LandingPage() {
                 backgroundImage: `url(${movieCardBg})`,
                 backgroundSize: 'cover', borderRadius: '15px', display: 'flex', alignItems: 'flex-end', padding: '20px', boxShadow: '0 10px 30px rgba(0,0,0,0.5)', border: '2px solid transparent'
               }}>
-                <h3 style={{ color: 'white', fontSize: '2rem', fontFamily: 'Oswald', textShadow: '0 2px 10px black' }}>MOVIES</h3>
+                <h3 style={{ color: 'white', fontSize: '2rem', fontFamily: 'Oswald', textShadow: '0 2px 10px black' }}>FILMES</h3>
               </motion.div>
             </Link>
 
