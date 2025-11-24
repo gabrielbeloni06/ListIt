@@ -2,7 +2,7 @@ import { useState } from 'react'
 import { useNavigate, Link } from 'react-router-dom'
 import axios from 'axios'
 import { motion } from 'framer-motion'
-import cityBg from './assets/cyberpunk-city.jpg' 
+import cityBg from './assets/back.jpg' 
 
 export default function RegisterPage() {
   const [username, setUsername] = useState('')
@@ -16,7 +16,6 @@ export default function RegisterPage() {
     setError('')
 
     try {
-      // Envia os dados para o Django criar o usuário
       await axios.post('http://127.0.0.1:8000/api/register/', {
         username,
         email,
