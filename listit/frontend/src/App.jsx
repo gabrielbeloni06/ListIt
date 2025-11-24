@@ -44,6 +44,25 @@ function App() {
       alert("Erro! Provavelmente você já adicionou esse anime.")
     }
   }
+  const deletarAnime = async (id) => {
+    try {
+      await axios.delete(`http://127.0.0.1:8000/api/animes/${id}/`)
+      fetchMinhaLista()
+    } catch (error) {
+      console.error("Erro ao deletar:", error)
+    }
+  }
+
+  const atualizarNota = async (anime, novaNota) => {
+    try {
+      await axios.patch(`http://127.0.0.1:8000/api/animes/${anime.id}/`, {
+        nota_pessoal: novaNota
+      })
+      fetchMinhaLista()
+    } catch (error) {
+      console.error("Erro ao atualizar nota:", error)
+    }
+  }
   return (
     <div style={{ padding: '40px', fontFamily: 'Arial', maxWidth: '1000px', margin: '0 auto' }}>
       
@@ -87,10 +106,30 @@ function App() {
         {animes.length === 0 ? <p>Sua lista está vazia.</p> : (
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(200px, 1fr))', gap: '20px' }}>
             {animes.map(anime => (
-              <div key={anime.id} style={{ border: '1px solid #ddd', padding: '15px', borderRadius: '8px' }}>
-                {anime.capa_url && <img src={anime.capa_url} style={{width: '100%', height: '150px', objectFit: 'cover'}} />}
-                <h3>{anime.titulo}</h3>
-                <p>Nota: {anime.nota_pessoal} ⭐</p>
+              <div key={anime.id} style={{ border: '1px solid #ddd', padding: '15px', borderRadius: '8px', position: 'relative' }}>
+                <button 
+                  onClick={() => deletarAnime(anime.id)}
+                  style={{ position: 'absolute', top: '5px', right: '5px', background: '#e74c3c', color: 'white', border: 'none', borderRadius: '50%', width: '25px', height: '25px', cursor: 'pointer' }}
+                >
+                  X
+                </button>
+
+                {anime.capa_url && <img src={anime.capa_url} style={{width: '100%', height: '150px', objectFit: 'cover', borderRadius: '4px'}} />}
+                
+                <h3 style={{fontSize: '16px', margin: '10px 0'}}>{anime.titulo}</h3>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '5px' }}>
+                  <span>Nota:</span>
+                  <select 
+                    value={anime.nota_pessoal} 
+                    onChange={(e) => atualizarNota(anime, e.target.value)}
+                    style={{ padding: '5px' }}
+                  >
+                    {[1,2,3,4,5,6,7,8,9,10].map(n => (
+                      <option key={n} value={n}>{n} ⭐</option>
+                    ))}
+                  </select>
+                </div>
+
               </div>
             ))}
           </div>
