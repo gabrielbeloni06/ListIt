@@ -1,8 +1,10 @@
 import { useState, useEffect } from 'react'
-import { Routes, Route, Link } from 'react-router-dom'
+import { Routes, Route, Link, useNavigate, Navigate } from 'react-router-dom' 
 import { motion, AnimatePresence } from 'framer-motion' 
-import axios from 'axios'
+import axios from 'axios' 
+import api from './api'  
 import Tilt from 'react-parallax-tilt'
+import LoginPage from './LoginPage' 
 import './App.css' 
 import cloudsBg from './assets/anime-clouds.jpg'      
 import cityBg from './assets/cyberpunk-city.jpg'      
@@ -10,6 +12,11 @@ import animeCardBg from './assets/anime-card.jpg'
 import movieCardBg from './assets/movie-card.jpg'     
 import animeHeaderBg from './assets/anime-header.jpg' 
 import movieHeaderBg from './assets/movie-header.jpg'
+const PrivateRoute = ({ children }) => {
+  const token = localStorage.getItem('access_token')
+  return token ? children : <Navigate to="/login" />
+}
+
 const HeartIcon = ({ filled, onClick }) => (
   <svg 
     onClick={onClick}
@@ -29,8 +36,25 @@ const HeartIcon = ({ filled, onClick }) => (
 )
 
 function LandingPage() {
+  const navigate = useNavigate()
+  const isLoggedIn = !!localStorage.getItem('access_token')
+
+  const handleLogout = () => {
+    localStorage.removeItem('access_token')
+    localStorage.removeItem('refresh_token')
+    navigate('/login') 
+  }
+
   return (
     <div className="snap-container">
+      <div style={{ position: 'fixed', top: 30, right: 30, zIndex: 100 }}>
+        {isLoggedIn ? (
+          <button onClick={handleLogout} style={{ padding: '10px 25px', background: 'rgba(231, 76, 60, 0.8)', color: 'white', border: 'none', borderRadius: '30px', cursor: 'pointer', fontWeight: 'bold', backdropFilter: 'blur(5px)' }}>LOGOUT</button>
+        ) : (
+          <Link to="/login" style={{ padding: '10px 25px', background: '#00f2ff', color: 'black', textDecoration: 'none', borderRadius: '30px', fontWeight: 'bold', boxShadow: '0 0 15px rgba(0, 242, 255, 0.5)' }}>LOGIN</Link>
+        )}
+      </div>
+
       <section className="snap-section">
         <motion.div 
           initial={{ scale: 1 }} animate={{ scale: 1.1 }} transition={{ duration: 20, repeat: Infinity, repeatType: "reverse", ease: "linear" }}
@@ -43,6 +67,7 @@ function LandingPage() {
           <p style={{ fontSize: '1.2rem', letterSpacing: '5px', marginTop: '10px', opacity: 0.9, fontFamily: 'Montserrat', textTransform: 'uppercase' }}>Seu mundo de filmes e animes aqui.</p>
         </motion.div>
       </section>
+
       <section className="snap-section" style={{background: '#000'}}>
         <motion.div initial={{ scale: 1.1 }} animate={{ scale: 1.0 }} transition={{ duration: 25, repeat: Infinity, repeatType: "reverse", ease: "linear" }} style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', backgroundImage: `url(${cityBg})`, backgroundSize: 'cover', backgroundPosition: 'center', zIndex: 0 }} />
         <div style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', background: 'linear-gradient(to right, rgba(10, 0, 20, 0.9), rgba(10, 0, 20, 0.4))', zIndex: 1 }}></div>
@@ -58,6 +83,7 @@ function LandingPage() {
           </motion.div>
         </div>
       </section>
+
       <section className="snap-section" style={{ background: '#0a0a0a' }}>
         <div style={{ textAlign: 'center' }}>
           <motion.h2 initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} style={{ fontSize: '2rem', marginBottom: '50px', letterSpacing: '3px', color: 'white' }}>ESCOLHA SEU MUNDO</motion.h2>
@@ -83,12 +109,20 @@ function AnimePage() {
   const [animes, setAnimes] = useState([])
   const [busca, setBusca] = useState('')
   const [resultados, setResultados] = useState([])
+  const navigate = useNavigate()
 
   useEffect(() => { fetchMinhaLista() }, [])
+  const handleLogout = () => {
+    localStorage.removeItem('access_token')
+    localStorage.removeItem('refresh_token')
+    navigate('/login')
+  }
 
   const fetchMinhaLista = async () => {
-    const response = await axios.get('http://127.0.0.1:8000/api/animes/')
-    setAnimes(response.data)
+    try {
+      const response = await api.get('animes/') 
+      setAnimes(response.data)
+    } catch (error) { console.error(error) }
   }
 
   const pesquisarAnime = async () => {
@@ -98,7 +132,7 @@ function AnimePage() {
   }
 
   const salvarAnime = async (item) => {
-    await axios.post('http://127.0.0.1:8000/api/animes/', {
+    await api.post('animes/', {
       titulo: item.title, api_id: item.mal_id, capa_url: item.images.jpg.image_url, nota_pessoal: 10, comentario: "Via App"
     })
     alert("Anime adicionado!")
@@ -109,13 +143,13 @@ function AnimePage() {
 
   const deletarAnime = async (id) => {
     if(confirm("Remover dos favoritos?")) {
-      await axios.delete(`http://127.0.0.1:8000/api/animes/${id}/`)
+      await api.delete(`animes/${id}/`)
       fetchMinhaLista()
     }
   }
 
   const atualizarNota = async (item, novaNota) => {
-    await axios.patch(`http://127.0.0.1:8000/api/animes/${item.id}/`, { nota_pessoal: novaNota })
+    await api.patch(`animes/${item.id}/`, { nota_pessoal: novaNota })
     fetchMinhaLista()
   }
 
@@ -130,11 +164,12 @@ function AnimePage() {
           <Link to="/" style={{ textDecoration: 'none', color: 'white', border: '1px solid rgba(255,255,255,0.3)', padding: '10px 20px', borderRadius: '30px', backdropFilter: 'blur(5px)', fontWeight: 'bold' }}>
             HOME
           </Link>
-          <Link to="/" style={{ textDecoration: 'none', color: 'white', background: 'rgba(231, 76, 60, 0.7)', border: 'none', padding: '10px 20px', borderRadius: '30px', backdropFilter: 'blur(5px)', fontWeight: 'bold' }}>
+          <button onClick={handleLogout} style={{ textDecoration: 'none', color: 'white', background: 'rgba(231, 76, 60, 0.7)', border: 'none', padding: '10px 20px', borderRadius: '30px', backdropFilter: 'blur(5px)', fontWeight: 'bold', cursor: 'pointer' }}>
             LOGOUT
-          </Link>
+          </button>
         </div>
       </div>
+
       <div style={{ maxWidth: '1200px', margin: '-50px auto 0', position: 'relative', zIndex: 3, padding: '0 20px' }}>
         
         <div style={{ background: 'rgba(20, 10, 30, 0.8)', padding: '30px', borderRadius: '20px', backdropFilter: 'blur(20px)', border: '1px solid rgba(162, 155, 254, 0.2)', boxShadow: '0 20px 50px rgba(0,0,0,0.5)' }}>
@@ -205,12 +240,18 @@ function MoviePage() {
   const [filmes, setFilmes] = useState([])
   const [busca, setBusca] = useState('')
   const [resultados, setResultados] = useState([])
+  const navigate = useNavigate()
   const TMDB_API_KEY = "87897d6f6b9574dec01a9e050477f47d"
 
   useEffect(() => { fetchMinhaLista() }, [])
+  const handleLogout = () => {
+    localStorage.removeItem('access_token')
+    localStorage.removeItem('refresh_token')
+    navigate('/login')
+  }
 
   const fetchMinhaLista = async () => {
-    const response = await axios.get('http://127.0.0.1:8000/api/filmes/')
+    const response = await api.get('filmes/')
     setFilmes(response.data)
   }
 
@@ -222,7 +263,7 @@ function MoviePage() {
 
   const salvarFilme = async (item) => {
     const capa = item.poster_path ? `https://image.tmdb.org/t/p/w500${item.poster_path}` : null
-    await axios.post('http://127.0.0.1:8000/api/filmes/', {
+    await api.post('filmes/', {
       titulo: item.title, api_id: item.id, capa_url: capa, nota_pessoal: 10, comentario: item.overview
     })
     alert("Filme adicionado!")
@@ -233,13 +274,13 @@ function MoviePage() {
 
   const deletarFilme = async (id) => {
     if(confirm("Remover dos favoritos?")) {
-      await axios.delete(`http://127.0.0.1:8000/api/filmes/${id}/`)
+      await api.delete(`filmes/${id}/`)
       fetchMinhaLista()
     }
   }
 
   const atualizarNota = async (item, novaNota) => {
-    await axios.patch(`http://127.0.0.1:8000/api/filmes/${item.id}/`, { nota_pessoal: novaNota })
+    await api.patch(`filmes/${item.id}/`, { nota_pessoal: novaNota })
     fetchMinhaLista()
   }
 
@@ -255,9 +296,9 @@ function MoviePage() {
           <Link to="/" style={{ textDecoration: 'none', color: 'white', border: '1px solid rgba(255,255,255,0.3)', padding: '10px 20px', borderRadius: '30px', backdropFilter: 'blur(5px)', fontWeight: 'bold' }}>
             HOME
           </Link>
-          <Link to="/" style={{ textDecoration: 'none', color: 'white', background: 'rgba(231, 76, 60, 0.7)', border: 'none', padding: '10px 20px', borderRadius: '30px', backdropFilter: 'blur(5px)', fontWeight: 'bold' }}>
+          <button onClick={handleLogout} style={{ textDecoration: 'none', color: 'white', background: 'rgba(231, 76, 60, 0.7)', border: 'none', padding: '10px 20px', borderRadius: '30px', backdropFilter: 'blur(5px)', fontWeight: 'bold', cursor: 'pointer' }}>
             LOGOUT
-          </Link>
+          </button>
         </div>
       </div>
       <div style={{ maxWidth: '1200px', margin: '-50px auto 0', position: 'relative', zIndex: 3, padding: '0 20px' }}>
@@ -327,8 +368,18 @@ function App() {
   return (
     <Routes>
       <Route path="/" element={<LandingPage />} />
-      <Route path="/animes" element={<AnimePage />} />
-      <Route path="/filmes" element={<MoviePage />} />
+      <Route path="/login" element={<LoginPage />} />
+      <Route path="/animes" element={
+        <PrivateRoute>
+          <AnimePage />
+        </PrivateRoute>
+      } />
+      
+      <Route path="/filmes" element={
+        <PrivateRoute>
+          <MoviePage />
+        </PrivateRoute>
+      } />
     </Routes>
   )
 }
